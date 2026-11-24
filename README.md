@@ -1,6 +1,13 @@
 # GitHub-Actions-Zero-to-Hero
 Repository to kick start your journey with GitHub Actions
 
+## CI walkthrough
+
+The [`CI` workflow](.github/workflows/ci.yml) runs the test suite on pushes and
+pull requests across several supported Python versions. See
+[`walkthrough.md`](walkthrough.md) for a step-by-step explanation of how it
+works and how to experiment with it.
+
 ## Comparing with Jenkins 
 
 ### Advantages of GitHub Actions over Jenkins

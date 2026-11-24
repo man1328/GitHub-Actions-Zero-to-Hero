@@ -1,8 +1,6 @@
-# app.py
-# This is a test commit
-def add(a, b):
-    return a + b
+"""Small example module used to demonstrate a continuous-integration workflow."""
 
-def test_add():
-    assert add(1, 2) == 3
-    assert add(1, -1) == 0
+
+def add(a: int | float, b: int | float) -> int | float:
+    """Return the sum of two numbers."""
+    return a + b
