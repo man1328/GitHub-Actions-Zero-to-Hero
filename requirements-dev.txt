@@ -1,3 +1,4 @@
 # Pinned so local runs and CI use exactly the same test runner.
 # (Latest release at the time this was set up: 9.2.0)
 pytest==9.2.0
+pytest-cov==7.1.0

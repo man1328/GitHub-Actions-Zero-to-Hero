@@ -134,7 +134,7 @@ steps:
       python -m pip install -r requirements-dev.txt
 
   - name: Run the test suite
-    run: python -m pytest -v
+    run: python -m pytest -v --cov=src --cov-report=term-missing
 ```
 
 - `uses:` calls a reusable action; `run:` executes shell commands.
@@ -152,6 +152,9 @@ steps:
 - `python -m pytest -v` discovers and runs the tests, with verbose output
   showing each case. Using `python -m pytest` (rather than bare `pytest`)
   guarantees you use the interpreter that was just set up.
+- `--cov=src --cov-report=term-missing` adds a coverage table to the job log,
+  showing which lines in `src/` were exercised and which were not. The plugin
+  comes from the pinned `pytest-cov==7.1.0` in `requirements-dev.txt`.
 - The old workflow did `cd src` then named the file explicitly. A properly
   named `test_*.py` file is auto-discovered, so no `cd` or filename is needed.
 
@@ -230,7 +233,8 @@ checks).
    You'll see a run named `CI` with four jobs — one per Python version.
 
 3. Click a run, then a job, to expand each step and read its log. The
-   `Run the test suite` step shows the five passing cases.
+   `Run the test suite` step shows the five passing cases and the coverage
+   table for `src/`.
 
 4. To see the PR behaviour, create a branch, make a change, push it, and open
    a pull request against `main`. The `CI` check appears on the PR page.
@@ -273,8 +277,30 @@ failure → fix → green build.
 
 Natural extensions, roughly in order of usefulness:
 
-1. **Coverage** — add `pytest-cov` to `requirements-dev.txt` and run
-   `python -m pytest --cov=src --cov-report=term-missing`.
+1. **Coverage** — add `pytest-cov==7.1.0` to `requirements-dev.txt`, then
+   **reinstall the dependencies** (editing the file alone does not install
+   anything):
+
+   ```bash
+   python -m pip install -r requirements-dev.txt
+   python -m pytest --cov=src --cov-report=term-missing
+   ```
+
+   Expected tail of the output:
+
+   ```
+   Name                   Stmts   Miss  Cover
+   ------------------------------------------
+   src/addition.py            2      0   100%
+   src/test_addition.py       5      0   100%
+   ------------------------------------------
+   TOTAL                      7      0   100%
+   ```
+
+   If you see `error: unrecognized arguments: --cov=src --cov-report=term-missing`,
+   the plugin simply isn't installed in the interpreter you're using. Re-run
+   the `pip install -r requirements-dev.txt` command above inside your
+   activated venv. `.coverage` and `htmlcov/` are already in `.gitignore`.
 2. **Linting** — add a `lint` job using [ruff](https://docs.astral.sh/ruff/)
    (`ruff check .` and `ruff format --check .`) so style problems are caught
    alongside test failures.
@@ -296,6 +322,7 @@ Natural extensions, roughly in order of usefulness:
 | `actions/checkout` | `v7` (latest release `v7.0.1`) | GitHub Releases API |
 | `actions/setup-python` | `v7` (latest release `v7.1.0`) | GitHub Releases API |
 | `pytest` | `9.2.0` | PyPI JSON API |
+| `pytest-cov` (optional, section 8) | `7.1.0` | PyPI JSON API |
 | Python matrix | `3.11`–`3.14` | python.org active releases |
 
 Re-check these when you come back to the repo months later; the pattern stays
